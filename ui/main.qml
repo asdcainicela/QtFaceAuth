@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
+import QtMultimedia
 
 ApplicationWindow {
     id: window
@@ -106,20 +107,41 @@ ApplicationWindow {
                 
                 // Index 0: Dashboard (Camera)
                 Item {
-                    Text {
-                        text: "🎥 CAMERA FEED PLACEHOLDER"
-                        color: "#0F0"
-                        anchors.centerIn: parent
-                        font.pixelSize: 24
-                    }
                     
+                    CaptureSession {
+                        id: captureSession
+                        camera: Camera {
+                            id: camera
+                            active: true
+                        }
+                        videoOutput: videoOutput
+                    }
+
+                    VideoOutput {
+                        id: videoOutput
+                        anchors.fill: parent
+                        fillMode: VideoOutput.PreserveAspectCrop
+                    }
+
+                    // Overlay (Face Frame UI)
                     Rectangle {
+                        anchors.centerIn: parent
                         width: 300
                         height: 300
-                        anchors.centerIn: parent
                         color: "transparent"
-                        border.color: "#0F0"
+                        border.color: "#0f0" // Green scanning frame
                         border.width: 2
+                        radius: 20
+                        
+                        Text {
+                            text: "Scanning..."
+                            color: "#0f0"
+                            anchors.bottom: parent.top
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.bottomMargin: 10
+                            font.pixelSize: 18
+                            font.bold: true
+                        }
                     }
                 }
 
