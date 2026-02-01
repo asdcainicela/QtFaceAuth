@@ -27,18 +27,26 @@ bool DatabaseManager::connectToDatabase()
     if (m_connected) return true;
 
     // Determine Path (Search up the tree for 'db' folder if in shadow build)
+    // Determine Path (Search up the tree for 'db' folder)
+    // We want to find the source 'db' folder, not a shadow copy if possible.
     QDir dir(QDir::currentPath());
+    bool found = false;
     
-    // Try current, then parent, then parent's parent
-    for (int i = 0; i < 3; ++i) {
-        if (dir.exists("db")) {
-            if (dir.cd("db")) break;
+    // Try current, then parent, up to 4 levels
+    for (int i = 0; i < 4; ++i) {
+        if (dir.exists("db") && QFileInfo::exists(dir.filePath("db/faceauth.db"))) {
+             if (dir.cd("db")) {
+                 found = true;
+                 break;
+             }
         }
         if (!dir.cdUp()) break;
     }
 
-    if (!QFileInfo::exists(dir.filePath("faceauth.db"))) {
-        qWarning() << "Could not find 'db/faceauth.db' starting from" << QDir::currentPath();
+    if (!found) {
+        qWarning() << "Could not find 'db/faceauth.db' searching up from" << QDir::currentPath();
+        // Fallback to creating one in current/db if not found?
+        // For now, let's keep it clean and fail or use AppData (but code below uses dir.filePath)
     }
     
     QString dbFile = dir.filePath("faceauth.db");
@@ -143,6 +151,16 @@ bool DatabaseManager::hasBiometrics(int userId)
     query.prepare("SELECT count(*) FROM biometrics WHERE user_id = :uid");
     query.bindValue(":uid", userId);
     if (query.exec() && query.next()) {
+        return query.value(0).toInt() > 0;
+    }
+    return false;
+}
+
+bool DatabaseManager::hasAnyBiometrics()
+{
+    if (!m_connected) return false;
+    QSqlQuery query;
+    if (query.exec("SELECT count(*) FROM biometrics") && query.next()) {
         return query.value(0).toInt() > 0;
     }
     return false;

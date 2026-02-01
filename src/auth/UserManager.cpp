@@ -108,9 +108,9 @@ bool UserManager::authenticateWithFace(const QString &imagePath)
         }
     }
 
-    // 4. Threshold (0.85 seems like a safe bet for MSE logic)
+    // 4. Threshold (Lowered to 0.65 for better usability in basic CV mode)
     // Adjust this threshold based on testing
-    if (bestScore > 0.85f) {
+    if (bestScore > 0.65f) {
         // Success!
         m_currentUser = bestUser;
         m_loggedIn = true;

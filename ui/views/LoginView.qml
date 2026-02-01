@@ -7,7 +7,7 @@ import QtQuick.Effects
 Page {
     id: loginPage
     
-    property bool faceMode: true
+    property bool faceMode: databaseManager.hasAnyBiometrics()
     
     Component.onCompleted: {
         if (faceMode) camera.start()
@@ -88,6 +88,7 @@ Page {
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
                 spacing: 10
+                visible: databaseManager.hasAnyBiometrics()
                 
                 Button {
                     text: "Face ID"

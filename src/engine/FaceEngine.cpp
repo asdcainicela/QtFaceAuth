@@ -99,9 +99,9 @@ float FaceEngine::compare(const QByteArray &face1, const QByteArray &face2)
     
     // Normalize logic: 
     // MSE 0 => 1.0 (Perfect)
-    // MSE > 2000 => 0.0 (Different)
+    // MSE > 10000 => 0.0 (Different)
     
-    float similarity = 1.0f - (float)(mse / 2500.0);
+    float similarity = 1.0f - (float)(mse / 10000.0);
     if (similarity < 0) similarity = 0;
     
     qDebug() << "FaceEngine: MSE:" << mse << "Similarity:" << similarity;

@@ -32,6 +32,7 @@ public:
     Q_INVOKABLE QVariantMap getUserByUuid(const QString &uuid);
     Q_INVOKABLE QVariantMap verifyUserPassword(const QString &username, const QString &password);
     Q_INVOKABLE bool hasBiometrics(int userId);
+    Q_INVOKABLE bool hasAnyBiometrics();
     Q_INVOKABLE bool logAccess(int userId, const QString &method, double confidence, const QString &eventType);
     
     // Face Auth
