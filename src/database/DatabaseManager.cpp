@@ -75,19 +75,70 @@ QVariantMap DatabaseManager::getUserByUuid(const QString &uuid)
     QVariantMap user;
     if (!m_connected) return user;
 
+    if (!m_connected) return user;
+
+    // Optimized query to fetch user and joined role name
     QSqlQuery query;
-    query.prepare("SELECT id, username, full_name, role FROM users WHERE uuid = :uuid AND is_active = 1");
+    query.prepare(R"(
+        SELECT u.id, u.username, u.full_name, u.uuid, r.name as role_name 
+        FROM users u 
+        LEFT JOIN user_roles ur ON u.id = ur.user_id 
+        LEFT JOIN roles r ON ur.role_id = r.id 
+        WHERE u.uuid = :uuid AND u.is_active = 1
+    )");
     query.bindValue(":uuid", uuid);
 
     if (query.exec() && query.next()) {
         user["id"] = query.value("id");
         user["username"] = query.value("username");
         user["full_name"] = query.value("full_name");
-        user["role"] = query.value("role"); // Need to join roles table properly in real impl
+        user["uuid"] = query.value("uuid");
+        user["role"] = query.value("role_name");
     } else {
         qWarning() << "User not found or query failed:" << query.lastError().text();
     }
     return user;
+}
+
+QVariantMap DatabaseManager::verifyUserPassword(const QString &username, const QString &password)
+{
+    QVariantMap result;
+    if (!m_connected) return result;
+
+    QSqlQuery query;
+    // In production, use bcrypt verify. Here we compare plain/simple hash.
+    query.prepare(R"(
+        SELECT u.id, u.uuid, u.full_name, r.name as role_name
+        FROM users u
+        LEFT JOIN user_roles ur ON u.id = ur.user_id
+        LEFT JOIN roles r ON ur.role_id = r.id
+        WHERE u.username = :username AND u.password_hash = :pass AND u.is_active = 1
+    )");
+    query.bindValue(":username", username);
+    query.bindValue(":pass", password);
+
+    if (query.exec() && query.next()) {
+        result["valid"] = true;
+        result["id"] = query.value("id");
+        result["uuid"] = query.value("uuid");
+        result["full_name"] = query.value("full_name");
+        result["role"] = query.value("role_name");
+    } else {
+        result["valid"] = false;
+    }
+    return result;
+}
+
+bool DatabaseManager::hasBiometrics(int userId)
+{
+    if (!m_connected) return false;
+    QSqlQuery query;
+    query.prepare("SELECT count(*) FROM biometrics WHERE user_id = :uid");
+    query.bindValue(":uid", userId);
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt() > 0;
+    }
+    return false;
 }
 
 bool DatabaseManager::logAccess(int userId, const QString &method, double confidence, const QString &eventType)

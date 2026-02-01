@@ -14,12 +14,17 @@ qt_add_executable(appQtFaceAuth
     src/main.cpp
     src/database/DatabaseManager.cpp
     src/database/DatabaseManager.h
+    src/auth/UserManager.cpp
+    src/auth/UserManager.h
 )
 
 qt_add_qml_module(appQtFaceAuth
     URI QtFaceAuth
     VERSION 1.0
-    QML_FILES ui/main.qml
+    QML_FILES 
+        ui/main.qml
+        ui/views/LoginView.qml
+        ui/views/DashboardView.qml
 )
 
 target_link_libraries(appQtFaceAuth

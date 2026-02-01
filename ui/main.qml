@@ -1,164 +1,29 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Window
-import QtMultimedia
+import "views"
 
 ApplicationWindow {
     id: window
-    visible: true
     width: 1280
-    height: 800
-    title: "QtFaceAuth"
-    color: "#222" // Dark background by default
+    height: 720
+    visible: true
+    title: "QtFaceAuth - Security System"
+    color: "#121212"
 
-    // System Properties
-    property bool isDarkTheme: true
-    property bool isVertical: width < height
-
-    // Header
-    Rectangle {
-        id: header
-        height: 60
-        width: parent.width
-        color: "#111"
-        z: 10
-
-        Text {
-            text: "QtFaceAuth System"
-            color: "#FFF"
-            font.pixelSize: 20
-            font.bold: true
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: 20
-        }
-
-        Text {
-            text: new Date().toLocaleTimeString()
-            color: "#888"
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-            anchors.rightMargin: 20
-        }
+    StackView {
+        id: stackView
+        anchors.fill: parent
+        initialItem: "views/LoginView.qml"
     }
 
-    // Main Layout (Row for Horizontal, Column for Vertical)
-    RowLayout {
-        anchors.top: header.bottom
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        spacing: 0
-
-        // Sidebar Navigation
-        Rectangle {
-            Layout.fillHeight: true
-            Layout.preferredWidth: 80
-            color: "#1a1a1a"
-
-            ColumnLayout {
-                anchors.fill: parent
-                spacing: 10
-
-                // Quick Repeater for Menu Items
-                Repeater {
-                    model: [
-                        {icon: "📷", label: "Scan", index: 0},
-                        {icon: "👥", label: "Users", index: 1},
-                        {icon: "📜", label: "Logs", index: 2},
-                        {icon: "⚙️", label: "Config", index: 3}
-                    ]
-
-                    Rectangle {
-                        Layout.preferredWidth: 60
-                        Layout.preferredHeight: 60
-                        Layout.alignment: Qt.AlignHCenter
-                        color: stackView.currentIndex === modelData.index ? "#333" : "transparent"
-                        radius: 8
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: modelData.icon
-                            font.pixelSize: 24
-                        }
-                        
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: stackView.currentIndex = modelData.index
-                        }
-                    }
-                }
-                
-                Item { Layout.fillHeight: true } // Spacer
-            }
-        }
-
-        // Content Area
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            color: "#000"
-
-            StackLayout {
-                id: stackView
-                anchors.fill: parent
-                currentIndex: 0
-                
-                // Index 0: Dashboard (Camera)
-                Item {
-                    
-                    CaptureSession {
-                        id: captureSession
-                        camera: Camera {
-                            id: camera
-                            active: true
-                        }
-                        videoOutput: videoOutput
-                    }
-
-                    VideoOutput {
-                        id: videoOutput
-                        anchors.fill: parent
-                        fillMode: VideoOutput.PreserveAspectCrop
-                    }
-
-                    // Overlay (Face Frame UI)
-                    Rectangle {
-                        anchors.centerIn: parent
-                        width: 300
-                        height: 300
-                        color: "transparent"
-                        border.color: "#0f0" // Green scanning frame
-                        border.width: 2
-                        radius: 20
-                        
-                        Text {
-                            text: "Scanning..."
-                            color: "#0f0"
-                            anchors.bottom: parent.top
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.bottomMargin: 10
-                            font.pixelSize: 18
-                            font.bold: true
-                        }
-                    }
-                }
-
-                // Index 1: Users
-                Item {
-                    Text { text: "Users View"; color: "white"; anchors.centerIn: parent }
-                }
-
-                // Index 2: Logs
-                Item {
-                    Text { text: "Logs View"; color: "white"; anchors.centerIn: parent }
-                }
-
-                // Index 3: Config
-                Item {
-                    Text { text: "Settings View"; color: "white"; anchors.centerIn: parent }
-                }
+    Connections {
+        target: userManager
+        function onSessionChanged() {
+            if (userManager.isLoggedIn) {
+                stackView.replace(null, "views/DashboardView.qml")
+            } else {
+                stackView.replace(null, "views/LoginView.qml")
             }
         }
     }

@@ -59,7 +59,27 @@ graph LR
     Found -- No --> End
 ```
 
-## 4. Component Responsibilities
+### 3.1. Enrollment Ceremony (Bootstrapping)
+Criticial flow for the first-time setup and Admin security.
+
+1.  **Initial State**: System has one user `admin` (password-only, no face).
+2.  **First Login**: Admin logs in via Password.
+3.  **Forced Enrollment**:
+    *   System checks `biometrics` table for `admin` UUID.
+    *   If empty -> **Locks UI** and opens Face Capture Wizard.
+    *   *Admin cannot proceed without registering their face.*
+4.  **Steady State**: Future Admin actions (e.g., creating users) require **Face Auth** (Step-Up Authentication).
+
+## 4. Role-Based Access Control (RBAC)
+The system uses a flat role hierarchy managed via the `roles` table.
+
+| Role | Permissions | Description |
+| :--- | :--- | :--- |
+| **Admin** | `{"all": true}` | Full access. Can manage users, system config, and view logs. **Requires Face Auth for critical actions.** |
+| **User** | `{"access": true}` | Can perform Face Login to unlock/trigger external signals (GPIO). Cannot access settings. |
+| **Viewer** | `{"read_only": true}` | Can view logs and status but cannot modify data. (Auditor). |
+
+## 5. Component Responsibilities
 | Component | Responsibility |
 | :--- | :--- |
 | **Qt Interface** | Hardware-accelerated GUI, user feedback, and window management. |

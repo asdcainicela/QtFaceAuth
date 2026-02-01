@@ -7,9 +7,18 @@ DB_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')
 DB_PATH = os.path.join(DB_FOLDER, 'faceauth.db')
 SCHEMA_PATH = os.path.join(os.path.dirname(__file__), 'schema.sql')
 
-def init_db():
+def init_db(reset=False):
     print(f"Initializing Database...")
     
+    # 0. Reset if requested
+    if reset and os.path.exists(DB_PATH):
+        try:
+            os.remove(DB_PATH)
+            print(f"🗑️ Database Reset: Deleted {DB_PATH}")
+        except OSError as e:
+            print(f"Error deleting database: {e}")
+            sys.exit(1)
+
     # 1. Create db directory if not exists
     if not os.path.exists(DB_FOLDER):
         os.makedirs(DB_FOLDER)
@@ -58,6 +67,23 @@ def seed_data(cursor):
             ('viewer', '{"read_only": true}')
         ]
         cursor.executemany("INSERT INTO roles (name, permissions) VALUES (?, ?)", roles)
+
+    # Seed Default Admin User
+    cursor.execute("SELECT count(*) FROM users WHERE username='admin'")
+    if cursor.fetchone()[0] == 0:
+        print("Seeding default ADMIN user...")
+        # Password hardcoded 'admin123' for dev. In prod use bcrypt/argon2.
+        # uuid is auto-generated in C++, but here we mock it.
+        cursor.execute("""
+            INSERT INTO users (uuid, username, full_name, password_hash, is_active)
+            VALUES ('00000000-0000-0000-0000-000000000001', 'admin', 'System Administrator', 'admin123', 1)
+        """)
+        user_id = cursor.lastrowid
+        
+        # Link to Admin Role
+        cursor.execute("SELECT id FROM roles WHERE name='admin'")
+        role_id = cursor.fetchone()[0]
+        cursor.execute("INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)", (user_id, role_id))
         
     # Check default config
     cursor.execute("SELECT count(*) FROM system_config")
@@ -71,4 +97,9 @@ def seed_data(cursor):
         cursor.executemany("INSERT INTO system_config (key, value, group_name) VALUES (?, ?, ?)", configs)
 
 if __name__ == "__main__":
-    init_db()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--reset", action="store_true", help="Delete existing database before initializing")
+    args = parser.parse_args()
+    
+    init_db(reset=args.reset)
