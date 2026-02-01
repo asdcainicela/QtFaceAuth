@@ -28,7 +28,12 @@ nav:
   - Arquitectura: architecture.md
   - Base de Datos: database.md
   - Seguridad (Grado Militar): security.md
-  - Diseño UI: ui_design.md
+  - Diseño UI:
+      - Mapa General: ui_design/index.md
+      - Diseños Verticales: ui_design/vertical.md
+      - Diseños Horizontales: ui_design/horizontal.md
+      - Submenús: ui_design/submenus.md
+      - Specs & Componentes: ui_design/specs.md
   - Instalación: installation.md
   - Manual de Uso: user_guide.md
   - Especificación Técnica: technical_specs.md
