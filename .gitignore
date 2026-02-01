@@ -30,7 +30,34 @@ ui_*.h
 Makefile*
 *build-*
 *.qm
-*.prl
+
+# Qt / C++
+build/
+cmake-build-*/
+*.user
+*.user.*
+*.qmake.stash
+CMakeLists.txt.user
+*.exe
+*.dll
+*.pdb
+*.ilk
+*.obj
+
+# Python / Scripts
+scripts/__pycache__/
+*.pyc
+
+# Database
+db/*.db
+db/*.db-journal
+db/*.db-wal
+*.db
+*.sqlite
+
+# IDE
+.vscode/
+.idea/
 
 # Qt unit tests
 target_wrapper.*

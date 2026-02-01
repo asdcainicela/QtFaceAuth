@@ -13,7 +13,7 @@ qt_standard_project_setup()
 qt_add_qml_module(appQtFaceAuth
     URI QtFaceAuth
     VERSION 1.0
-    QML_FILES src/qml/main.qml
+    QML_FILES ui/main.qml
 )
 
 qt_add_executable(appQtFaceAuth
