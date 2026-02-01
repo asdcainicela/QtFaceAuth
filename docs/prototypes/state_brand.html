@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .brand-box {
+            background: #0f0f15;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .logo-rect {
+            width: 100%;
+            height: 100%;
+            border: 4px solid #00ff00;
+            border-radius: 12px;
+            transform: rotate(45deg);
+        }
+
+        .logo-dot {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 30px;
+            height: 30px;
+            background: #00ff00;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #00ff00;
+        }
+
+        .brand-name {
+            font-family: 'Courier New', monospace;
+            color: white;
+            letter-spacing: 5px;
+            margin-top: 10px;
+            text-transform: uppercase;
+            font-size: 20px;
+        }
+
+        .brand-name span {
+            color: #00ff00;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="brand-box">
+        <div class="logo-icon">
+            <div class="logo-rect"></div>
+            <div class="logo-dot"></div>
+        </div>
+        <div class="brand-name">QtFace<span>Auth</span></div>
+    </div>
+</body>
+
+</html>

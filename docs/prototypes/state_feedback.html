@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            background: #1e1e2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+        }
+
+        .mockup-container {
+            position: relative;
+            width: 300px;
+            height: 350px;
+            overflow: hidden;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+
+        .red-frame {
+            width: 150px;
+            height: 150px;
+            border: 3px solid #ff0055;
+            border-radius: 20px;
+            margin: 40px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.3);
+        }
+
+        .warning {
+            position: absolute;
+            bottom: 50px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .warning span {
+            background: rgba(255, 0, 85, 0.2);
+            border: 1px solid #ff0055;
+            color: #ff0055;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mockup-container">
+        <div class="red-frame">
+            <p style="color: rgba(255,255,255,0.3); font-size: 12px;">VIDEO FEED</p>
+        </div>
+        <div class="warning">
+            <span>⚠️ MUY OSCURO - ACÉRQUESE</span>
+        </div>
+    </div>
+</body>
+
+</html>

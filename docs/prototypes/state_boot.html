@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            background: #000;
+            color: #00ff00;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .mockup-container {
+            width: 90%;
+            max-width: 400px;
+            text-align: left;
+        }
+
+        p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mockup-container">
+        <p>> SYSTEM_INIT...</p>
+        <p>> CHECKING_MEMORY_INTEGRITY... <span style="color: white;">[OK]</span></p>
+        <p>> LOADING_BIOMETRIC_ENGINE (DeepFace)... <span style="color: white;">[OK]</span></p>
+        <p>> CONNECTING_CAMERA_DEVICE (Index 0)... <span style="color: white;">[OK]</span></p>
+        <p>> VERIFYING_ENCRYPTION_KEYS (AES-256)... <span style="color: white;">[LOCKED]</span></p>
+        <p>> ESTABLISHING_SECURE_TUNNEL... <span style="color: white;">[DONE]</span></p>
+        <br>
+        <p style="color: cyan;">> READY_FOR_AUTH.</p>
+        <div style="width: 10px; height: 20px; background: #00ff00; animation: blink 1s infinite;"></div>
+    </div>
+</body>
+
+</html>

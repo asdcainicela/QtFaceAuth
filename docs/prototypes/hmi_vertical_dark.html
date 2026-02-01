@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>QtFaceAuth - HMI Vertical Dark</title>
+    <style>
+        /* HMI VERTICAL DARK (1080x1920) - Portait Kiosk */
+        :root {
+            --bg: #121212;
+            --panel: #1e1e1e;
+            --accent: #ff9900;
+            --text: #ffffff;
+            --border: #333;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Roboto Condensed', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* MAIN CONTENT (Top) */
+        .viewport {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header-title {
+            font-size: 32px;
+            color: var(--accent);
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .header-sub {
+            color: #888;
+            font-size: 18px;
+        }
+
+        .camera-feed {
+            flex: 1;
+            background: #000;
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .face-guide {
+            width: 80%;
+            padding-bottom: 80%;
+            border: 4px dashed rgba(255, 153, 0, 0.5);
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .status-overlay {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .status-badge {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .action-area {
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scan-btn {
+            width: 100%;
+            height: 100px;
+            background: var(--accent);
+            color: black;
+            font-size: 32px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 153, 0, 0.3);
+        }
+
+        /* BOTTOM NAV BAR (Easy Reach) */
+        .navbar-bottom {
+            height: 100px;
+            background: var(--panel);
+            border-top: 2px solid #333;
+            display: flex;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            cursor: pointer;
+            border-right: 1px solid #2a2a2a;
+        }
+
+        .nav-item.active {
+            background: #252525;
+            color: var(--accent);
+        }
+
+        .nav-icon {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .nav-label {
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="viewport">
+        <div class="header-info">
+            <h1 class="header-title">KIOSK TERMINAL A</h1>
+            <div class="header-sub">System ID: #882-12</div>
+        </div>
+
+        <div class="camera-feed">
+            <div class="status-overlay"><span class="status-badge">READY TO SCAN</span></div>
+            <div class="face-guide"></div>
+        </div>
+
+        <div class="action-area">
+            <button class="scan-btn">TOUCH TO START</button>
+        </div>
+    </div>
+
+    <div class="navbar-bottom">
+        <div class="nav-item active">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">HOME</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">⚙️</div>
+            <div class="nav-label">SETTINGS</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">📞</div>
+            <div class="nav-label">SUPPORT</div>
+        </div>
+    </div>
+
+</body>
+
+</html>

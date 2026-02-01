@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>QtFaceAuth - Desktop Light</title>
+    <style>
+        /* LIGHT THEME (CLINICAL / BANKING STYLE) */
+        :root {
+            --bg: #f0f2f5;
+            --surface: #ffffff;
+            --primary: #0066cc;
+            /* Professional Blue */
+            --text: #333333;
+            --border: #d1d9e6;
+            --success: #00cc66;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', sans-serif;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .window-frame {
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+
+        /* SIDEBAR MENU */
+        .sidebar {
+            width: 250px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .logo-dot {
+            width: 30px;
+            height: 30px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        .brand {
+            font-weight: bold;
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .menu-item {
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #666;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .menu-item:hover {
+            background: #e6f0ff;
+            color: var(--primary);
+        }
+
+        .menu-item.active {
+            background: #e6f0ff;
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+        }
+
+        .badge {
+            background: #ff4444;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .camera-card {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            border: 1px solid var(--border);
+            width: 500px;
+        }
+
+        .cam-feed {
+            width: 100%;
+            height: 300px;
+            background: #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #0052a3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="window-frame">
+        <div class="sidebar">
+            <div class="logo-area">
+                <div class="logo-dot"></div>
+                <span class="brand">QtFaceAuth</span>
+            </div>
+            <div class="menu-item active">Dashboard</div>
+            <div class="menu-item">
+                Usuarios
+                <span class="badge">12</span>
+            </div>
+            <div class="menu-item">Logs de Acceso</div>
+            <div class="menu-item">Configuración</div>
+            <div style="margin-top: auto; border-top: 1px solid #eee; padding-top: 20px;">
+                <div class="menu-item">Cerrar Sesión</div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="camera-card">
+                <h2 style="margin-top: 0;">Control de Acceso</h2>
+                <p style="color: #666; margin-bottom: 20px;">Por favor, alinee su rostro con el marco.</p>
+                <div class="cam-feed">
+                    <!-- Simulated Face Frame Light Mode -->
+                    <div style="width: 150px; height: 150px; border: 2px solid var(--primary); border-radius: 50%;">
+                    </div>
+                </div>
+                <button class="btn-primary">INICIAR ESCANEO</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

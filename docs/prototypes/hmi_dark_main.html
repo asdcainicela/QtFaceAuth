@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>QtFaceAuth - HMI Dark</title>
+    <style>
+        /* HMI THEME (INDUSTRIAL TOUCH) */
+        :root {
+            --bg: #111111;
+            --panel: #222222;
+            --accent: #ff9900;
+            /* Industrial Orange */
+            --text: #ffffff;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Roboto Condensed', sans-serif;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* KIOSK HEADER */
+        .hmi-header {
+            height: 80px;
+            background: var(--panel);
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            justify-content: space-between;
+        }
+
+        .hmi-title {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .status-indicator {
+            display: flex;
+            gap: 10px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background: #00ff00;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* TOUCH GRID LAYOUT */
+        .hmi-grid {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            height: calc(100vh - 80px);
+        }
+
+        /* SIDEBAR BUTTONS */
+        .hmi-sidebar {
+            background: #1a1a1a;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .touch-btn {
+            background: #333;
+            color: #fff;
+            border: 1px solid #444;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .touch-btn.active {
+            background: var(--accent);
+            color: black;
+            font-weight: bold;
+            border-color: var(--accent);
+        }
+
+        .icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        /* VIEWPORT */
+        .hmi-viewport {
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .cam-view {
+            flex: 2;
+            background: black;
+            border: 2px solid #333;
+            position: relative;
+            border-radius: 4px;
+        }
+
+        .info-panel {
+            flex: 1;
+            background: var(--panel);
+            border-radius: 4px;
+            padding: 20px;
+        }
+
+        .big-btn {
+            width: 100%;
+            height: 60px;
+            background: var(--accent);
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            color: black;
+            border-radius: 4px;
+            margin-top: 20px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hmi-header">
+        <div class="hmi-title">ACCESS CONTROL UNIT #04</div>
+        <div class="status-indicator">
+            <div>NET: <span class="dot"></span></div>
+            <div>CAM: <span class="dot"></span></div>
+            <div>TEMP: 45°C</div>
+        </div>
+    </div>
+    <div class="hmi-grid">
+        <div class="hmi-sidebar">
+            <div class="touch-btn active">
+                <div class="icon">🏠</div> INICIO
+            </div>
+            <div class="touch-btn">
+                <div class="icon">👥</div> USUARIOS
+            </div>
+            <div class="touch-btn">
+                <div class="icon">⚙️</div> AJUSTES
+            </div>
+            <div class="touch-btn">
+                <div class="icon">📜</div> LOGS
+            </div>
+            <div class="touch-btn" style="margin-top: auto; background: #400;">
+                <div class="icon">🚨</div> PANIC
+            </div>
+        </div>
+        <div class="hmi-viewport">
+            <div class="cam-view">
+                <!-- Overlay -->
+                <div style="position: absolute; top: 10px; left: 10px; color: var(--accent);">CAM_01 [LIVE]</div>
+                <div
+                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 4px dashed var(--accent); width: 200px; height: 200px;">
+                </div>
+            </div>
+            <div class="info-panel">
+                <h3 style="border-bottom: 1px solid #444; padding-bottom: 10px;">ESTADO DEL SISTEMA</h3>
+                <p>Esperando Biometría...</p>
+                <div style="background: #111; padding: 10px; margin-top: 20px; font-family: monospace; color: #0f0;">
+                    >> INIT_SEQ_COMPLETE<br>
+                    >> SENSORS_ACTIVE<br>
+                    >> WAITING_TRIGGER...
+                </div>
+                <button class="big-btn">ACTIVAR ESCANEO</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
