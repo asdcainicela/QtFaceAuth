@@ -70,6 +70,15 @@ def do_build(clean=False):
     run_command("cmake --build . --config Debug", cwd=BUILD_DIR)
     print("Build Complete.")
 
+def load_qt_path():
+    env_file = os.path.join(PROJECT_ROOT, ".env")
+    if os.path.exists(env_file):
+        with open(env_file, "r") as f:
+            for line in f:
+                if line.strip().startswith("QT_PATH="):
+                    return line.strip().split("=", 1)[1].strip()
+    return None
+
 def do_run():
     print("--- RUNNING APPLICATION ---")
     exe_path = os.path.join(BUILD_DIR, "Debug", "appQtFaceAuth.exe")
@@ -77,6 +86,13 @@ def do_run():
         exe_path = os.path.join(BUILD_DIR, "Release", "appQtFaceAuth.exe")
         
     if os.path.exists(exe_path):
+        # Inject Qt bin to PATH
+        qt_path = load_qt_path()
+        if qt_path:
+            qt_bin = os.path.join(qt_path, "bin")
+            os.environ["PATH"] = qt_bin + os.pathsep + os.environ["PATH"]
+            print(f"Added to PATH: {qt_bin}")
+            
         run_command(f'"{exe_path}"', cwd=PROJECT_ROOT)
     else:
         print("Executable not found. Run 'build' first.")

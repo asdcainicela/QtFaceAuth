@@ -10,14 +10,16 @@ find_package(Qt6 6.4 REQUIRED COMPONENTS Quick Widgets Sql Multimedia)
 qt_standard_project_setup()
 
 # Resources
+qt_add_executable(appQtFaceAuth
+    src/main.cpp
+    src/database/DatabaseManager.cpp
+    src/database/DatabaseManager.h
+)
+
 qt_add_qml_module(appQtFaceAuth
     URI QtFaceAuth
     VERSION 1.0
     QML_FILES ui/main.qml
-)
-
-qt_add_executable(appQtFaceAuth
-    src/main.cpp
 )
 
 target_link_libraries(appQtFaceAuth

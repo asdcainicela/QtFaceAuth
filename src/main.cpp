@@ -1,10 +1,13 @@
-#include <QInteractian>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include "database/DatabaseManager.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
+    // Initialize Database
+    DatabaseManager::instance().connectToDatabase();
 
     QQmlApplicationEngine engine;
     // Load QML from the new architecture path (ui/main.qml)
