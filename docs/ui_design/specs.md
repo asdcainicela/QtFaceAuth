@@ -57,5 +57,20 @@ stateDiagram-v2
 | :--- | :--- | :--- |
 | `Primary` | `#00FF00` (Neon Green) | Éxito, Liveness OK, Bordes Activos |
 | `Error` | `#FF0055` (Neon Red) | Fallo, Alerta de Spoofing |
-| `Background` | `#1E1E2E` | Fondo Principal |
 | `Surface` | `#2E2E3E` | Paneles, Tarjetas |
+
+---
+
+## 5. Galería de Estados de Alerta (Atomic States)
+
+Referencia visual para estados críticos del sistema (no interactivos en el Master), útiles para styling de errores y feedback.
+
+### 5.1 Feedback y Desafíos
+<div style="display:flex; gap:10px;">
+    <iframe src="../../prototypes/state_feedback.html" width="32%" height="300px" style="border: 1px solid #333; border-radius: 8px;"></iframe>
+    <iframe src="../../prototypes/state_challenge.html" width="32%" height="300px" style="border: 1px solid #333; border-radius: 8px;"></iframe>
+    <iframe src="../../prototypes/state_spoof.html" width="32%" height="300px" style="border: 1px solid #333; border-radius: 8px;"></iframe>
+</div>
+
+### 5.2 Estado de Éxito (Access Granted)
+<iframe src="../../prototypes/state_success.html" width="100%" height="200px" style="border: 1px solid #333; border-radius: 8px;"></iframe>

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QtFaceAuth Master Prototype</title>
+    <style>
+        /* --- CSS VARIABLES (THEMING) --- */
+        :root {
+            --bg: #000;
+            --panel: #111;
+            --text: #fff;
+            --accent: #0f0;
+            --border: #333;
+            --success: #0f0;
+            --danger: #f00;
+            --radius: 8px;
+            --font: 'Segoe UI', sans-serif;
+        }
+
+        /* Light Theme Overrides */
+        body.theme-light {
+            --bg: #f5f7fa;
+            --panel: #ffffff;
+            --text: #333;
+            --accent: #0066cc;
+            --border: #e1e4e8;
+            --success: #28a745;
+            --danger: #dc3545;
+        }
+
+        /* Common Reset */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* --- LAYOUT STRUCTURES --- */
+
+        /* WRAPPER FOR DEVICE SIMULATION */
+        #app-wrapper {
+            transition: all 0.5s ease;
+            overflow: hidden;
+            background: var(--bg);
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* HORIZONTAL (Sidebar Left) */
+        body.layout-horizontal {
+            flex-direction: row;
+        }
+
+        body.layout-horizontal #app-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: row;
+        }
+
+        body.layout-horizontal .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            z-index: 10;
+            padding-left: 270px;
+        }
+
+        /* Header offset */
+        body.layout-horizontal .navbar {
+            width: 250px;
+            height: 100vh;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+            padding-top: 80px;
+        }
+
+        body.layout-horizontal .main-view {
+            flex: 1;
+            padding: 80px 40px 40px 40px;
+        }
+
+        /* Top padding for header */
+
+        /* VERTICAL (Sidebar Bottom) */
+        body.layout-vertical {
+            flex-direction: column;
+            align-items: center;
+            /* Center horizontally */
+            justify-content: center;
+            /* Center vertically */
+            background: #111;
+            /* Dark backdrop outside device */
+        }
+
+        body.layout-vertical #app-wrapper {
+            width: 400px;
+            /* Fixed Phone Width */
+            height: 750px;
+            /* Fixed Phone Height */
+            display: flex;
+            flex-direction: column;
+            border: 15px solid #222;
+            /* Bezel */
+            border-radius: 30px;
+            /* Rounded Device Corners */
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+        }
+
+        body.layout-vertical .header {
+            height: 70px;
+            padding: 0 20px;
+            flex-shrink: 0;
+        }
+
+        body.layout-vertical .navbar {
+            height: 80px;
+            flex-direction: row;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+        }
+
+        body.layout-vertical .main-view {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* --- COMPONENT STYLES --- */
+
+        /* Header */
+        .header {
+            background: var(--panel);
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: 0.3s;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-icon {
+            width: 30px;
+            height: 30px;
+            background: var(--accent);
+            border-radius: 5px;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: var(--panel);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        .nav-item {
+            cursor: pointer;
+            padding: 15px;
+            color: #888;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            transition: 0.2s;
+            border-radius: var(--radius);
+        }
+
+        .nav-item:hover {
+            color: var(--text);
+            background: rgba(128, 128, 128, 0.1);
+        }
+
+        .nav-item.active {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* Layout specific nav styles */
+        body.layout-horizontal .nav-item {
+            flex-direction: row;
+            width: 90%;
+            margin: 5px auto;
+            padding: 12px 20px;
+            justify-content: flex-start;
+        }
+
+        body.layout-horizontal .nav-item.active {
+            background: rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--accent);
+        }
+
+        body.layout-vertical .nav-icon {
+            font-size: 24px;
+        }
+
+        /* Main View Area */
+        .main-view {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .view-section {
+            display: none;
+            height: 100%;
+            flex-direction: column;
+        }
+
+        .view-section.active {
+            display: flex;
+        }
+
+        /* --- DASHBOARD VIEW --- */
+        .dashboard-grid {
+            display: grid;
+            height: 100%;
+            gap: 20px;
+        }
+
+        /* Responsive Dashboard */
+        body.layout-horizontal .dashboard-grid {
+            grid-template-columns: 2fr 1fr;
+        }
+
+        body.layout-vertical .dashboard-grid {
+            grid-template-rows: 1fr auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .camera-feed {
+            background: #000;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+
+        .face-frame {
+            width: min(60vw, 60vh);
+            height: min(60vw, 60vh);
+            border: 4px solid var(--accent);
+            border-radius: 50%;
+            opacity: 0.8;
+            transition: border-color 0.3s;
+        }
+
+        .status-panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-width: 300px;
+        }
+
+        .btn-action {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: var(--radius);
+            cursor: pointer;
+            margin-top: auto;
+            text-transform: uppercase;
+        }
+
+        .theme-light .btn-action {
+            color: #fff;
+        }
+
+        /* Ensure text contrast in light mode */
+        .theme-dark .btn-action {
+            color: #000;
+        }
+
+        /* Ensure text contrast in dark mode */
+
+        /* --- SUBMENUS --- */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 2px solid var(--border);
+            color: #888;
+        }
+
+        .data-table td {
+            padding: 15px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .settings-group {
+            margin-bottom: 20px;
+            background: var(--panel);
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        /* DEBUG CONTROLS (Floating) */
+        .debug-fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .debug-fab button {
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+
+<body class="theme-dark layout-horizontal">
+
+    <div id="app-wrapper">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="brand">
+                <div class="brand-icon"></div>
+                <span>QtFaceAuth</span>
+            </div>
+            <div style="font-size: 14px; opacity: 0.7;">
+                SYSTEM: ONLINE | <span id="clock">12:00</span>
+            </div>
+        </div>
+
+        <!-- SIDEBAR / BOTTOM NAVBAR -->
+        <div class="navbar">
+            <div class="nav-item active" onclick="switchView('dashboard')">
+                <div class="nav-icon">📷</div>
+                <span>Scan</span>
+            </div>
+            <div class="nav-item" onclick="switchView('users')">
+                <div class="nav-icon">👥</div>
+                <span>Users</span>
+            </div>
+            <div class="nav-item" onclick="switchView('logs')">
+                <div class="nav-icon">📜</div>
+                <span>Logs</span>
+            </div>
+            <div class="nav-item" onclick="switchView('settings')">
+                <div class="nav-icon">⚙️</div>
+                <span>Setup</span>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-view">
+
+            <!-- VIEW: DASHBOARD -->
+            <div id="view-dashboard" class="view-section active">
+                <div class="dashboard-grid">
+                    <div class="camera-feed">
+                        <div class="face-frame"></div>
+                        <div style="position: absolute; bottom: 20px; color: var(--accent); font-family: monospace;">
+                            LIVE
+                            FEED</div>
+                    </div>
+                    <div class="status-panel">
+                        <h3>System Status</h3>
+                        <div>Network: <span style="color:var(--success)">Connected</span></div>
+                        <div>Database: <span style="color:var(--success)">Synced</span></div>
+                        <div>Camera: <span style="color:var(--success)">Active (30fps)</span></div>
+                        <hr style="border:0; border-top:1px solid var(--border);">
+                        <p style="opacity: 0.6; font-size: 14px;">Please position your face within the markers for
+                            authentication.</p>
+                        <button class="btn-action">Start Auth</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: USERS -->
+            <div id="view-users" class="view-section">
+                <h2 style="margin-top:0;">User Database</h2>
+                <div class="dashboard-grid"> <!-- Reusing grid for cards -->
+                    <div class="settings-group">
+                        <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                            <!-- User Card -->
+                            <div
+                                style="width:100px; height:120px; background:var(--bg); border:1px solid var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:8px;">
+                                <div style="font-size:30px;">👤</div>
+                                <span style="font-size:12px; margin-top:5px;">Admin</span>
+                            </div>
+                            <div
+                                style="width:100px; height:120px; background:var(--bg); border:1px solid var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:8px;">
+                                <div style="font-size:30px;">👩</div>
+                                <span style="font-size:12px; margin-top:5px;">Jane D.</span>
+                            </div>
+                            <div
+                                style="width:100px; height:120px; border:2px dashed var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:8px; cursor:pointer; opacity:0.6;">
+                                <div style="font-size:30px;">+</div>
+                                <span style="font-size:12px; margin-top:5px;">Add New</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: LOGS -->
+            <div id="view-logs" class="view-section">
+                <h2 style="margin-top:0;">Access Logs</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>User</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>14:02</td>
+                            <td>Admin</td>
+                            <td style="color:var(--success)">Granted</td>
+                        </tr>
+                        <tr>
+                            <td>13:55</td>
+                            <td>Unknown</td>
+                            <td style="color:var(--danger)">Denied</td>
+                        </tr>
+                        <tr>
+                            <td>11:20</td>
+                            <td>Jane D.</td>
+                            <td style="color:var(--success)">Granted</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- VIEW: SETTINGS -->
+            <div id="view-settings" class="view-section">
+                <h2 style="margin-top:0;">Configuration</h2>
+                <div class="settings-group">
+                    <div class="setting-row">
+                        <span>Liveness Detection</span>
+                        <span style="color:var(--success)">ON</span>
+                    </div>
+                    <div class="setting-row">
+                        <span>Confidence Threshold</span>
+                        <span>0.92</span>
+                    </div>
+                    <div class="setting-row">
+                        <span>Theme</span>
+                        <button onclick="toggleTheme()" style="padding:5px 10px;">Toggle Dark/Light</button>
+                    </div>
+                    <div class="setting-row">
+                        <span>Layout</span>
+                        <button onclick="toggleLayout()" style="padding:5px 10px;">Toggle H/V</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    </div> <!-- End of #app-wrapper -->
+
+    <!-- DEBUG CONTROLS (Only visible if ?debug=true) -->
+    <div class="debug-fab" id="debugParams">
+        <span>Debug:</span>
+        <button onclick="setMode('layout-vertical', 'theme-dark')">V-Dark</button>
+        <button onclick="setMode('layout-vertical', 'theme-light')">V-Light</button>
+        <button onclick="setMode('layout-horizontal', 'theme-dark')">H-Dark</button>
+        <button onclick="setMode('layout-horizontal', 'theme-light')">H-Light</button>
+    </div>
+
+    <script>
+        // URL Params Handler
+        function init() {
+            const params = new URLSearchParams(window.location.search);
+            const theme = params.get('theme') || 'dark'; // 'dark' or 'light'
+            const layout = params.get('layout') || 'horizontal'; // 'horizontal' or 'vertical'
+            const view = params.get('view') || 'dashboard';
+
+            document.body.className = `theme-${theme} layout-${layout}`;
+            switchView(view);
+
+            // Hide debug if embedded
+            if (window.self !== window.top) {
+                document.getElementById('debugParams').style.display = 'none';
+            }
+
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        function switchView(viewId) {
+            // Update Tabs
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            // Find tab logic (simplified)
+            const buttons = { 'dashboard': 0, 'users': 1, 'logs': 2, 'settings': 3 };
+            document.querySelectorAll('.nav-item')[buttons[viewId]].classList.add('active');
+
+            // Update View
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(`view-${viewId}`).classList.add('active');
+        }
+
+        // Interactive Toggles for Demo
+        function toggleTheme() {
+            if (document.body.classList.contains('theme-dark')) {
+                document.body.classList.replace('theme-dark', 'theme-light');
+            } else {
+                document.body.classList.replace('theme-light', 'theme-dark');
+            }
+        }
+
+        function toggleLayout() {
+            if (document.body.classList.contains('layout-horizontal')) {
+                document.body.classList.replace('layout-horizontal', 'layout-vertical');
+            } else {
+                document.body.classList.replace('layout-vertical', 'layout-horizontal');
+            }
+        }
+
+        function setMode(layout, theme) {
+            document.body.className = `${layout} ${theme}`;
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Run
+        init();
+    </script>
+</body>
+
+</html>
