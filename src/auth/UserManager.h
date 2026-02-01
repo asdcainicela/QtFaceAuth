@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVariantMap>
+#include <QImage>
 
 class UserManager : public QObject
 {
@@ -16,6 +17,7 @@ public:
     Q_INVOKABLE bool login(const QString &username, const QString &password);
     Q_INVOKABLE void logout();
     Q_INVOKABLE bool hasBiometrics(int userId);
+    Q_INVOKABLE bool registerFace(int userId, const QString &imagePath);
     
     // Future CRUD methods
     // Q_INVOKABLE bool createUser(...)

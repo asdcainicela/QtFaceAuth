@@ -26,12 +26,19 @@ bool DatabaseManager::connectToDatabase()
 {
     if (m_connected) return true;
 
-    // Determine Path (Dev Mode: currently in project root/db)
-    // We try to find the file we created with python
+    // Determine Path (Search up the tree for 'db' folder if in shadow build)
     QDir dir(QDir::currentPath());
-    if (!dir.cd("db")) {
-        qWarning() << "Could not find 'db' folder in" << QDir::currentPath();
-        // Fallback or create?
+    
+    // Try current, then parent, then parent's parent
+    for (int i = 0; i < 3; ++i) {
+        if (dir.exists("db")) {
+            if (dir.cd("db")) break;
+        }
+        if (!dir.cdUp()) break;
+    }
+
+    if (!QFileInfo::exists(dir.filePath("faceauth.db"))) {
+        qWarning() << "Could not find 'db/faceauth.db' starting from" << QDir::currentPath();
     }
     
     QString dbFile = dir.filePath("faceauth.db");
