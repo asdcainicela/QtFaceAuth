@@ -1,0 +1,28 @@
+site_name: QtFaceAuth - Documentación
+theme:
+  name: material
+  palette:
+    primary: deep purple
+    accent: indigo
+  features:
+    - navigation.tabs
+    - content.code.copy
+
+plugins:
+  - search
+  - mermaid2
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid
+
+nav:
+  - Inicio: index.md
+  - Arquitectura: architecture.md
