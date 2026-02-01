@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>QtFaceAuth Design Specs</title>
+    <style>
+        body {
+            background: #1e1e2e;
+            color: white;
+            font-family: Consolas, monospace;
+            padding: 40px;
+        }
+
+        h1 {
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 10px;
+            color: #00ff00;
+        }
+
+        h2 {
+            margin-top: 40px;
+            color: #a6accd;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #2e2e3e;
+        }
+
+        th,
+        td {
+            border: 1px solid #444;
+            padding: 15px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background: #0f0f15;
+            color: #00ff00;
+            text-transform: uppercase;
+        }
+
+        code {
+            background: #000;
+            padding: 2px 5px;
+            border-radius: 3px;
+            color: cyan;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Sistema de Diseño Responsivo y Especificaciones</h1>
+    <p>La interfaz debe ser <strong>fluida y escalable</strong>, adaptándose desde tablets industriales (10") hasta
+        Video Walls (4k).</p>
+
+    <h2>5.1 Estrategia de Layout (Grid System)</h2>
+    <ul>
+        <li><strong>Header</strong>: <code>height: 10vh</code> (10% de la altura total).</li>
+        <li><strong>Main Viewport (Camera)</strong>: <code>flex: 1</code> (Ocupa todo el espacio restante).</li>
+        <li><strong>Footer/Status</strong>: <code>height: 15vh</code>.</li>
+        <li><strong>Face Frame</strong>: Centrado. Tamaño <code>min(40vw, 40vh)</code>.</li>
+    </ul>
+
+    <h2>5.2 Registro de Componentes</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID Componente</th>
+                <th>Etiqueta (Label)</th>
+                <th>Tamaño Base</th>
+                <th>Comportamiento de Escalado</th>
+                <th>Notas</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>btn_start_auth</code></td>
+                <td>"INICIAR ESCANEO"</td>
+                <td>200px x 60px</td>
+                <td><code>width: 20%</code></td>
+                <td>Botón Primario (Ghost Style con borde Neon).</td>
+            </tr>
+            <tr>
+                <td><code>btn_cancel</code></td>
+                <td>"CANCELAR"</td>
+                <td>200px x 60px</td>
+                <td><code>width: 20%</code></td>
+                <td>Botón Secundario (Opacidad reducida).</td>
+            </tr>
+            <tr>
+                <td><code>frame_biometric</code></td>
+                <td>N/A</td>
+                <td>400px x 400px</td>
+                <td><code>aspect-ratio: 1:1</code></td>
+                <td>El borde debe mantener 3px de grosor.</td>
+            </tr>
+            <tr>
+                <td><code>lbl_instruction</code></td>
+                <td>"GUIÑE EL OJO..."</td>
+                <td>24pt Font</td>
+                <td><code>font-size: 2.5vh</code></td>
+                <td>Texto dinámico.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>5.3 Tipografía Escalable</h2>
+    <ul>
+        <li><strong>Fuente Principal</strong>: Consolas / Roboto Mono.</li>
+        <li><strong>H1 (Títulos)</strong>: <code>3.5vh</code>.</li>
+        <li><strong>Body</strong>: <code>2.0vh</code>.</li>
+    </ul>
+
+</body>
+
+</html>

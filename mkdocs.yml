@@ -31,3 +31,5 @@ nav:
   - Diseño UI: ui_design.md
   - Instalación: installation.md
   - Manual de Uso: user_guide.md
+  - Especificación Técnica: technical_specs.md
+  - Plan de Pruebas (QA): testing_plan.md
