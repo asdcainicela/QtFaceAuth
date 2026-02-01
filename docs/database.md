@@ -1,100 +1,89 @@
-# Schema: auth
+# Especificación de Base de Datos
 
-Base de datos relacional (SQLite) para gestión de usuarios, roles y datos biométricos.
-Se utiliza **Soft Delete** (`deleted_at`) para mantener historial.
+Este documento define **la estructura final** de la base de datos para `QtFaceAuth`.
+Se utiliza **SQLite 3** con modo WAL habilitado para rendimiento y concurrencia.
 
-## Tablas
+## 1. Implementación Física
 
-| Tabla | Descripción |
-|-------|-------------|
-| `users` | Usuarios registrados |
-| `roles` | Definición de roles (Admin/User) |
-| `user_roles` | Asignación de roles a usuarios |
-| `biometrics` | Embeddings faciales de usuarios |
-| `sessions` | Registro de sesiones e historial de acceso |
+*   **Archivo**: `faceauth.db`
+*   **Driver Qt**: `QSQLITE`
+*   **Ubicación**:
+    *   Windows: `%APPDATA%/QtFaceAuth/db/faceauth.db`
+    *   Linux: `~/.local/share/QtFaceAuth/db/faceauth.db`
 
 ---
 
-## users
+## 2. Definición de Tablas (Schema Final)
 
-Usuarios del sistema.
+El esquema definitivo consta de **6 tablas** para cumplir con los requisitos de seguridad y configuración.
 
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| id | INTEGER PK | Auto-incremental |
-| username | TEXT | UNIQUE |
-| full_name | TEXT | Nombre completo |
-| email | TEXT | Opcional |
-| password_hash | TEXT | Hash (bcrypt) para login manual (backup) |
-| is_active | BOOLEAN | Cuenta activa (1/0) |
-| created_at | DATETIME | Fecha registro |
-| updated_at | DATETIME | Última actualización |
-| deleted_at | DATETIME | **Soft Delete**: Si no es NULL, el usuario está "eliminado" |
+### 2.1 Tabla: `users`
+Identidad principal de los operarios y empleados.
 
----
+| Columna | Tipo (SQLite) | Restricciones | Descripción |
+| :--- | :--- | :--- | :--- |
+| `id` | `INTEGER` | **PK**, AUTOINCREMENT | ID interno secuencial. |
+| `uuid` | `TEXT` | **UNIQUE**, NOT NULL | ID Global (UUID v4) para sincronización con servidor central. |
+| `username` | `TEXT` | **UNIQUE**, NOT NULL | Nombre de usuario para login manual. |
+| `full_name` | `TEXT` | NOT NULL | Nombre completo para visualización en UI. |
+| `password_hash` | `TEXT` | NULLABLE | Hash (Bcrypt) para acceso por teclado (backup). |
+| `is_active` | `INTEGER` | DEFAULT 1 | 1 = Activo, 0 = Bloqueado. |
+| `created_at` | `DATETIME` | DEFAULT CURRENT_TIMESTAMP | Fecha de alta. |
+| `deleted_at` | `DATETIME` | NULLABLE | **Soft Delete**. Si tiene fecha, el usuario está borrado. |
 
-## roles
+### 2.2 Tabla: `roles`
+Definición de perfiles de seguridad (RBAC).
 
-Roles y permisos del sistema.
+| Columna | Tipo | Restricciones | Descripción |
+| :--- | :--- | :--- | :--- |
+| `id` | `INTEGER` | **PK**, AUTOINCREMENT | ID del rol. |
+| `name` | `TEXT` | **UNIQUE**, NOT NULL | Ej: 'admin', 'operator', 'security'. |
+| `permissions` | `TEXT` | NOT NULL | JSON con flags (ej. `{"can_export": true}`). |
 
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| id | INTEGER PK | |
-| name | TEXT | 'admin', 'user', 'viewer' |
-| permissions | TEXT (JSON) | Permisos específicos |
+### 2.3 Tabla: `user_roles`
+Tabla intermedia para asignar N roles a N usuarios.
 
-**Ejemplo Permissions (JSON):**
-```json
-{
-  "users": {"create": true, "delete": false},
-  "camera": {"access": true}
-}
-```
+| Columna | Tipo | Restricciones | Descripción |
+| :--- | :--- | :--- | :--- |
+| `user_id` | `INTEGER` | **FK** -> `users.id` | CASCADE DELETE. |
+| `role_id` | `INTEGER` | **FK** -> `roles.id` | CASCADE DELETE. |
 
----
+### 2.4 Tabla: `biometrics`
+Vectores faciales separados para permitir múltiples caras por usuario.
 
-## user_roles
+| Columna | Tipo | Restricciones | Descripción |
+| :--- | :--- | :--- | :--- |
+| `id` | `INTEGER` | **PK**, AUTOINCREMENT | ID del registro biométrico. |
+| `user_id` | `INTEGER` | **FK** -> `users.id` | Dueño del vector. |
+| `face_vector` | `BLOB` | NOT NULL | Array de 128 o 512 floats (serializado binario). |
+| `model_version` | `TEXT` | DEFAULT 'v1' | Versión del modelo AI usado (para compatibilidad). |
+| `created_at` | `DATETIME` | DEFAULT CURRENT_TIMESTAMP | Fecha de captura. |
 
-Relación Muchos-a-Muchos entre usuarios y roles.
+### 2.5 Tabla: `sessions` (Access Logs)
+Historial inmutable de intentos de acceso.
 
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| user_id | INTEGER FK | -> users.id |
-| role_id | INTEGER FK | -> roles.id |
+| Columna | Tipo | Restricciones | Descripción |
+| :--- | :--- | :--- | :--- |
+| `id` | `INTEGER` | **PK**, AUTOINCREMENT | ID del evento. |
+| `user_id` | `INTEGER` | **FK** -> `users.id` | Puede ser NULL si el usuario no fue reconocido. |
+| `login_method` | `TEXT` | NOT NULL | 'FACE', 'PIN', 'RFID'. |
+| `confidence` | `REAL` | NULLABLE | Nivel de confianza (0.0 - 1.0) si fue FACE. |
+| `event_type` | `TEXT` | NOT NULL | 'SUCCESS', 'FAILED', 'SPOOF_ATTEMPT'. |
+| `snapshot_path` | `TEXT` | NULLABLE | Ruta a la foto de evidencia en disco. |
+| `created_at` | `DATETIME` | DEFAULT CURRENT_TIMESTAMP | Timestamp del evento. |
 
----
+### 2.6 Tabla: `system_config`
+Configuración local de la aplicación (Kiosco).
 
-## biometrics
-
-Almacenamiento de vectores faciales (embeddings).
-
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| id | INTEGER PK | |
-| user_id | INTEGER FK | -> users.id |
-| face_vector | BLOB | Vector de características (float array serializado) |
-| model_version | TEXT | Versión del modelo usado (ej: "dlib_resnet_v1") |
-| created_at | DATETIME | Fecha de captura |
-
----
-
-## sessions
-
-Historial de accesos y sesiones.
-
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| id | INTEGER PK | |
-| user_id | INTEGER FK | -> users.id |
-| login_method | TEXT | 'face', 'password' |
-| confidence | FLOAT | Nivel de confianza (si fue por rostro) |
-| ip_address | TEXT | Opcional |
-| created_at | DATETIME | Fecha de inicio de sesión |
-| expires_at | DATETIME | Expiración del token/sesión |
+| Columna | Tipo | Restricciones | Descripción |
+| :--- | :--- | :--- | :--- |
+| `key` | `TEXT` | **PK** | Clave (ej: `camera_index`, `min_confidence`). |
+| `value` | `TEXT` | NOT NULL | Valor de configuración. |
+| `group` | `TEXT` | DEFAULT 'general' | Agrupación para UI (General, Hardware, Network). |
 
 ---
 
-## Diagrama ER
+## 3. Diagrama Entidad-Relación (Final)
 
 ```mermaid
 erDiagram
@@ -105,20 +94,24 @@ erDiagram
     
     users {
         int id PK
+        uuid global_id
         string username
-        string full_name
         datetime deleted_at
     }
     
     biometrics {
         int id PK
-        int user_id FK
         blob face_vector
+        string model_v
     }
     
     roles {
         int id PK
-        string name
         json permissions
+    }
+    
+    system_config {
+        string key PK
+        string value
     }
 ```

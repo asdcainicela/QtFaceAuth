@@ -84,7 +84,7 @@ To improve security and usability (ISO/IEC 30107 standard adherence):
 
 1.  **Rate Limiting**:
     *   Max **3 failed attempts** per user/IP within 5 minutes.
-    *   After limit: 15-minute lock-out period.
+    *   Following limit: 15-minute lock-out period.
     *   *Alerts*: Notify admin of potential brute-force attacks via Audit Log.
 
 2.  **Visual Guidance (Overlay)**:
@@ -95,4 +95,66 @@ To improve security and usability (ISO/IEC 30107 standard adherence):
         *   "Hold Still" (Blur detection)
 
 ---
-*Desarrollado por asdcainicela*
+
+## 6. Estructura del Proyecto (File System)
+
+Organización estándar de código fuente C++ para escalabilidad y mantenimiento.
+
+```bash
+QtFaceAuth/
+├── 📂 src/                  # Código Fuente (Implementación .cpp)
+│   ├── main.cpp            # Punto de entrada de la aplicación
+│   ├── auth/               # Lógica de autenticación y flujos
+│   ├── database/           # Controladores SQL y definicion de modelos
+│   ├── hardware/           # Controladores de Cámara y GPIO
+│   └── utils/              # Herramientas (Loggers, Config parsers)
+│
+├── 📂 include/              # Cabeceras (.h) - API Pública interna
+│   ├── auth/               # Interfaces de Auth
+│   ├── database/           # Interfaces de DB
+│   └── ...
+│
+├── 📂 ui/                   # Interfaz de Usuario (QML/Qt Quick)
+│   ├── components/         # Botones, Cards, Inputs reutilizables
+│   ├── views/              # Pantallas completas (Dashboard.qml, Users.qml)
+│   ├── assets/             # Fuentes, Iconos SVG
+│   └── themes/             # Archivos de estilo (Dark/Light tokens)
+│
+├── 📂 resources/            # Recursos binarios (qresource)
+│   ├── images/             # Placeholders y logos estáticos
+│   └── sounds/             # Feedback de audio (Beeps)
+│
+├── 📂 tests/                # Pruebas Unitarias e Integración
+│   ├── unit/               # GoogleTest unitarios
+│   └── integration/        # Tests de integración HW/DB
+│
+├── 📂 3rdparty/             # Librerías Externas
+│   ├── opencv/             # Procesamiento de imagen
+│   └── dlib/               # Detección facial y modelos
+│
+├── 📂 scripts/              # Scripts de Mantenimiento (Python)
+│   ├── init_db.py          # Script para crear tablas/resetear DB
+│   └── schema.sql          # SQL Raw de creación
+│
+├── 📂 db/                   # Base de Datos Local (Dev)
+│   └── faceauth.db         # Archivo SQLite (GitIgnored)
+│
+├── 📂 docs/                 # Documentación del Proyecto (MkDocs)
+│   ├── architecture.md     # Este archivo
+│   ├── database.md         # Schema SQL
+│   ├── prototypes/         # Prototipos HTML/JS vivos
+│   └── ...
+│
+├── 📂 target/               # Binarios compilados (Salida de Build)
+│   ├── debug/              # Versión de desarrollo
+│   └── release/            # Versión final optimizada
+│
+├── CMakeLists.txt          # Configuración de Build (CMake)
+└── README.md               # Introducción rápida
+```
+
+### Descripción de Módulos Clave
+
+1.  **`src/auth/`**: Contiene el `AuthManager` que orquesta la captura de cámara, la consulta a base de datos y la decisión de acceso.
+2.  **`ui/views/`**: Separa la lógica visual. `Dashboard.qml` solo sabe mostrar datos, no cómo obtenerlos (MVVM).
+3.  **`database/`**: Abstracción de SQLite. Evita escribir SQL directo en la UI.
