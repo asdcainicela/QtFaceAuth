@@ -116,28 +116,9 @@ def main():
     parser = argparse.ArgumentParser(description="QtFaceAuth Manager")
     parser.add_argument("command", choices=["build", "run", "preview", "init-db", "clean"], help="Command to execute")
     
-    args = parser.parse_args()
-    
-    if args.command == "build":
-        do_build()
-    elif args.command == "clean":
-        do_build(clean=True)
-    elif args.command == "run":
-        do_run()
-    elif args.command == "preview":
-        do_preview()
-def do_reset_db():
-    print("--- RESETTING DATABASE ---")
-    confirm = input("Are you sure you want to DELETE the database? (y/N): ")
-    if confirm.lower() == 'y':
-        init_script = os.path.join(PROJECT_ROOT, "scripts", "init_db.py")
-        run_command(f"python \"{init_script}\" --reset", cwd=PROJECT_ROOT)
-    else:
-        print("Reset cancelled.")
-
 def main():
     parser = argparse.ArgumentParser(description="QtFaceAuth Manager")
-    parser.add_argument("command", choices=["build", "run", "preview", "init-db", "reset-db", "clean"], help="Command to execute")
+    parser.add_argument("command", choices=["build", "run", "preview", "clean"], help="Command to execute")
     
     args = parser.parse_args()
     
@@ -149,10 +130,6 @@ def main():
         do_run()
     elif args.command == "preview":
         do_preview()
-    elif args.command == "init-db":
-        do_init_db()
-    elif args.command == "reset-db":
-        do_reset_db()
 
 if __name__ == "__main__":
     main()
