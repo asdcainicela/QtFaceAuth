@@ -26,3 +26,8 @@ markdown_extensions:
 nav:
   - Inicio: index.md
   - Arquitectura: architecture.md
+  - Base de Datos: database.md
+  - Seguridad (Grado Militar): security.md
+  - Diseño UI: ui_design.md
+  - Instalación: installation.md
+  - Manual de Uso: user_guide.md
