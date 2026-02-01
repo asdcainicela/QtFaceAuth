@@ -20,6 +20,9 @@ int main(int argc, char *argv[])
     
     // Expose Logic to QML
     engine.rootContext()->setContextProperty("userManager", &userManager);
+    engine.rootContext()->setContextProperty("databaseManager", &DatabaseManager::instance());
+    
+    // Load QML from the Qt Resource SystemxtProperty("databaseManager", &DatabaseManager::instance());
     
     // Load QML from the Qt Resource System
     const QUrl url("qrc:/QtFaceAuth/ui/main.qml");

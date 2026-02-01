@@ -33,6 +33,7 @@ qt_add_qml_module(appQtFaceAuth
         ui/views/LoginView.qml
         ui/views/DashboardView.qml
         ui/views/EnrollmentView.qml
+        ui/views/UsersView.qml
 )
 
 target_link_libraries(appQtFaceAuth

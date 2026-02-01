@@ -66,18 +66,66 @@ bool UserManager::registerFace(int userId, const QString &imagePath)
         return false;
     }
     
-    // 3. Save to Database (We need to add this method to DatabaseManager)
-    QSqlQuery query;
-    query.prepare("INSERT INTO biometrics (user_id, face_vector) VALUES (:uid, :vec)");
-    query.bindValue(":uid", userId);
-    query.bindValue(":vec", faceEmbedding);
-    
-    if (!query.exec()) {
-         qCritical() << "DB Error saving biometrics:" << query.lastError().text();
-         return false;
+    // 3. Save to Database
+    if (DatabaseManager::instance().registerBiometrics(userId, faceEmbedding)) {
+        return DatabaseManager::instance().logAccess(userId, "face_enroll", 1.0, "enrollment");
+    } else {
+        return false;
     }
+}
+
+bool UserManager::authenticateWithFace(const QString &imagePath)
+{
+    QImage img(imagePath);
+    if (img.isNull()) {
+        emit loginFailed("Invalid image capture.");
+        return false;
+    }
+
+    // 1. Extract Features from input
+    QByteArray inputFeatures = FaceEngine::instance().extractFeatures(img);
+    if (inputFeatures.isEmpty()) {
+        emit loginFailed("No face detected in camera feed.");
+        return false;
+    }
+
+    // 2. Get All Users
+    QList<QVariantMap> candidates = DatabaseManager::instance().getAllUsersWithBiometrics();
     
-    return true;
+    // 3. Find Best Match
+    float bestScore = 0.0f;
+    QVariantMap bestUser;
+
+    for (const auto &user : candidates) {
+        QByteArray storedFeatures = user["features"].toByteArray();
+        float score = FaceEngine::instance().compare(inputFeatures, storedFeatures);
+        
+        qDebug() << "Comparing with" << user["username"] << "Score:" << score;
+
+        if (score > bestScore) {
+            bestScore = score;
+            bestUser = user;
+        }
+    }
+
+    // 4. Threshold (0.85 seems like a safe bet for MSE logic)
+    // Adjust this threshold based on testing
+    if (bestScore > 0.85f) {
+        // Success!
+        m_currentUser = bestUser;
+        m_loggedIn = true;
+        
+        emit sessionChanged();
+        emit loginSuccess(bestUser["username"].toString(), bestUser["role"].toString());
+        
+        DatabaseManager::instance().logAccess(bestUser["id"].toInt(), "face", bestScore, "login");
+        qDebug() << "Face Login Success:" << bestUser["username"] << "Confidence:" << bestScore;
+        return true;
+    }
+
+    qWarning() << "Face Login Failed. Best Score:" << bestScore;
+    emit loginFailed("Face not recognized.");
+    return false;
 }
 
 bool UserManager::isLoggedIn() const

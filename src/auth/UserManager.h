@@ -18,6 +18,7 @@ public:
     Q_INVOKABLE void logout();
     Q_INVOKABLE bool hasBiometrics(int userId);
     Q_INVOKABLE bool registerFace(int userId, const QString &imagePath);
+    Q_INVOKABLE bool authenticateWithFace(const QString &imagePath);
     
     // Future CRUD methods
     // Q_INVOKABLE bool createUser(...)

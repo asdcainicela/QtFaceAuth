@@ -33,6 +33,14 @@ public:
     Q_INVOKABLE QVariantMap verifyUserPassword(const QString &username, const QString &password);
     Q_INVOKABLE bool hasBiometrics(int userId);
     Q_INVOKABLE bool logAccess(int userId, const QString &method, double confidence, const QString &eventType);
+    
+    // Face Auth
+    // Returns List of Maps: {user_id, username, uuid, role_name, features (QByteArray)}
+    QList<QVariantMap> getAllUsersWithBiometrics();
+    Q_INVOKABLE bool registerBiometrics(int userId, const QByteArray &features);
+
+    // Management
+    Q_INVOKABLE QList<QVariantMap> getAllUsers();
 
 signals:
     void connectionStatusChanged(bool connected);

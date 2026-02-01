@@ -110,7 +110,12 @@ Page {
                 
                 HoverHandler { id: hoverHandler }
                 TapHandler {
-                    onTapped: console.log("Clicked:", model.action)
+                    onTapped: {
+                         console.log("Clicked:", model.action)
+                         if (model.action === "users") {
+                             dashboardPage.StackView.view.push("UsersView.qml")
+                         }
+                    }
                 }
             }
         }

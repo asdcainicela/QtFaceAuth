@@ -99,20 +99,16 @@ Page {
                 Rectangle { width: 30; height: 5; color: "#00d2ff"; x: parent.width-50; y: parent.height-25 }
                 Rectangle { width: 5; height: 30; color: "#00d2ff"; x: parent.width-25; y: parent.height-50 }
 
-                // Scanning Bar Animation
+                // Scan Line
                 Rectangle {
-                    width: parent.width
-                    height: 2
-                    color: "#00d2ff"
-                    opacity: 0.6
-                    y: 0
-                    visible: true
+                    id: scanLine
+                    width: parent.width; height: 2; color: "#00ff00"; opacity: 0.7
                     
                     SequentialAnimation on y {
                         loops: Animation.Infinite
                         running: true
-                        NumberAnimation { from: 0; to: parent.height; duration: 2000; easing.type: Easing.InOutQuad }
-                        NumberAnimation { from: parent.height; to: 0; duration: 2000; easing.type: Easing.InOutQuad }
+                        NumberAnimation { from: 0; to: 200; duration: 2000; easing.type: Easing.InOutQuad }
+                        NumberAnimation { from: 200; to: 0; duration: 2000; easing.type: Easing.InOutQuad }
                     }
                 }
             }

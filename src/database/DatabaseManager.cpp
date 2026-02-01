@@ -165,3 +165,89 @@ bool DatabaseManager::logAccess(int userId, const QString &method, double confid
     }
     return true;
 }
+
+QList<QVariantMap> DatabaseManager::getAllUsersWithBiometrics()
+{
+    QList<QVariantMap> results;
+    if (!m_connected) return results;
+
+    QSqlQuery query;
+    // Join users, roles, and biometrics
+    // We only care about users who HAVE biometrics
+    query.prepare(R"(
+        SELECT u.id, u.username, u.full_name, u.uuid, r.name as role_name, b.features
+        FROM users u
+        JOIN biometrics b ON u.id = b.user_id
+        LEFT JOIN user_roles ur ON u.id = ur.user_id
+        LEFT JOIN roles r ON ur.role_id = r.id
+        WHERE u.is_active = 1
+    )");
+
+    if (query.exec()) {
+        while (query.next()) {
+            QVariantMap user;
+            user["id"] = query.value("id");
+            user["username"] = query.value("username");
+            user["full_name"] = query.value("full_name");
+            user["uuid"] = query.value("uuid");
+            user["role"] = query.value("role_name");
+            user["features"] = query.value("features");
+            results.append(user);
+        }
+    } else {
+        qWarning() << "Failed to fetch biometric users:" << query.lastError().text();
+    }
+    return results;
+}
+
+bool DatabaseManager::registerBiometrics(int userId, const QByteArray &features)
+{
+    if (!m_connected) return false;
+
+    // Check if user already has biometrics, if so, update? Or just insert new row.
+    // For now, let's assume one face per user or multiple.
+    // Let's just insert.
+    QSqlQuery query;
+    query.prepare("INSERT INTO biometrics (user_id, features, created_at) VALUES (:uid, :vec, DATETIME('now'))");
+    query.bindValue(":uid", userId);
+    query.bindValue(":vec", features);
+
+    if (!query.exec()) {
+        qCritical() << "Failed to register biometrics:" << query.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+QList<QVariantMap> DatabaseManager::getAllUsers()
+{
+    QList<QVariantMap> results;
+    if (!m_connected) return results;
+
+    QSqlQuery query;
+    query.prepare(R"(
+        SELECT u.id, u.username, u.full_name, u.uuid, u.is_active, r.name as role_name, 
+               (SELECT COUNT(*) FROM biometrics b WHERE b.user_id = u.id) as output_biometrics
+        FROM users u
+        LEFT JOIN user_roles ur ON u.id = ur.user_id
+        LEFT JOIN roles r ON ur.role_id = r.id
+        ORDER BY u.username ASC
+    )");
+
+    if (query.exec()) {
+        while (query.next()) {
+            QVariantMap user;
+            user["id"] = query.value("id");
+            user["username"] = query.value("username");
+            user["full_name"] = query.value("full_name");
+            user["uuid"] = query.value("uuid");
+            user["role"] = query.value("role_name");
+            user["is_active"] = query.value("is_active");
+            user["has_biometrics"] = query.value("output_biometrics").toInt() > 0;
+            results.append(user);
+        }
+    } else {
+        qWarning() << "Failed to fetch users:" << query.lastError().text();
+    }
+    return results;
+}
