@@ -84,36 +84,8 @@ Page {
                 }
             }
 
-            // 2. Mode Switcher
-            RowLayout {
-                Layout.alignment: Qt.AlignHCenter
-                spacing: 10
-                visible: databaseManager.hasAnyBiometrics()
-                
-                Button {
-                    text: "Face ID"
-                    highlighted: faceMode
-                    onClicked: { faceMode = true; camera.start() }
-                    background: Rectangle {
-                        color: faceMode ? "#00d2ff" : "transparent"
-                        border.color: "#00d2ff"
-                        radius: 4
-                    }
-                    contentItem: Text { text: parent.text; color: faceMode?"white":"#00d2ff"; horizontalAlignment:Text.AlignHCenter; verticalAlignment:Text.AlignVCenter }
-                }
-
-                Button {
-                    text: "Password"
-                    highlighted: !faceMode
-                    onClicked: { faceMode = false; camera.stop() }
-                    background: Rectangle {
-                        color: !faceMode ? "#00d2ff" : "transparent"
-                        border.color: "#00d2ff"
-                        radius: 4
-                    }
-                    contentItem: Text { text: parent.text; color: !faceMode?"white":"#00d2ff"; horizontalAlignment:Text.AlignHCenter; verticalAlignment:Text.AlignVCenter }
-                }
-            }
+            // 2. Mode Switcher (Removed for cleaner UI)
+            // Default mode is determined by faceMode property.
 
             // 3. Face Login Area
             ColumnLayout {
@@ -152,6 +124,14 @@ Page {
                     background: Rectangle { color: "#00d2ff"; radius: 4 }
                     contentItem: Text { text: parent.text; color: "white"; font.bold: true; horizontalAlignment:Text.AlignHCenter; verticalAlignment:Text.AlignVCenter }
                     onClicked: imageCapture.captureToFile("")
+                }
+                
+                Button {
+                    text: "Use Password"
+                    flat: true
+                    Layout.alignment: Qt.AlignHCenter
+                    contentItem: Text { text: parent.text; color: "#aaaaaa"; font.underline: true; horizontalAlignment:Text.AlignHCenter; verticalAlignment:Text.AlignVCenter }
+                    onClicked: { faceMode = false; camera.stop() }
                 }
             }
 
@@ -198,6 +178,15 @@ Page {
                             statusLabel.text = "Invalid credentials"; statusLabel.color = "red";
                         }
                     }
+                }
+                
+                Button {
+                    text: "Use Face ID"
+                    flat: true
+                    visible: databaseManager.hasAnyBiometrics()
+                    Layout.alignment: Qt.AlignHCenter
+                    contentItem: Text { text: parent.text; color: "#aaaaaa"; font.underline: true; horizontalAlignment:Text.AlignHCenter; verticalAlignment:Text.AlignVCenter }
+                    onClicked: { faceMode = true; camera.start() }
                 }
             }
 
