@@ -1,20 +1,104 @@
-# QtFaceAuth - Biometric Authentication System
-High-performance facial recognition and authentication system built with C++ and Qt 6.
+# Qt Face Authentication System
 
-**Project**: QtFaceAuth  
-**Developed by**: asdcainicela
+High-performance biometric authentication system built with C++ and Qt 6, designed for real-time face recognition in edge and industrial environments.
 
-## 📘 Documentación Completa
-Toda la información de arquitectura, configuración y uso se encuentra en la documentación interna.
+---
 
-Para verla, inicia el servidor de documentación:
+## 🚀 Features
+
+* Real-time face detection and recognition
+* Modular C++ architecture (Engine, Database, UI)
+* Qt/QML-based user interface
+* User enrollment and authentication system
+* State-driven UI (idle, challenge, success, spoof detection)
+* Low-latency and high-performance execution
+
+---
+
+## 🧠 System Architecture
+
+Camera Input → Face Engine → Recognition → Authentication → UI Feedback
+
+### Core Components
+
+* **FaceEngine** → Detection and recognition pipeline
+* **UserManager** → User enrollment and management
+* **DatabaseManager** → Persistent storage
+* **UI (QML)** → Interactive authentication interface
+
+---
+
+## 🖥️ UI States
+
+* Idle state
+* Enrollment view
+* Authentication view
+* Success / Failure feedback
+* Spoof detection state
+
+---
+
+## 🛠️ Tech Stack
+
+* C++
+* Qt 6 (QML)
+* OpenCV
+* SQLite
+* CMake
+
+---
+
+## 📂 Project Structure
+
+```
+src/
+ ├── engine/
+ ├── auth/
+ ├── database/
+ ├── ui/
+
+docs/
+scripts/
+```
+
+---
+
+## 📘 Documentation
+
+This project includes full technical documentation using MkDocs.
+
+### Run locally:
 
 ```bash
-# instalar dependencias (una vez)
 pip install mkdocs mkdocs-material mkdocs-mermaid2-plugin
-
-# Iniciar servidor de documentación local
 python -m mkdocs serve
 ```
 
-Luego visita: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+Then open:
+
+http://127.0.0.1:8000
+
+---
+
+## 🎯 Use Cases
+
+* Access control systems
+* Industrial operator authentication
+* Smart security terminals
+* Edge AI authentication devices
+
+---
+
+## 🔮 Future Improvements
+
+* RTSP / IP camera integration
+* Edge deployment (Jetson / embedded systems)
+* Anti-spoofing improvements
+* Multi-camera support
+* MQTT / REST integration
+
+---
+
+## ⚠️ Notes
+
+This project is a clean and structured implementation inspired by real-world biometric authentication systems used in industrial and edge AI environments.
